@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>errgroup问题排查</title>
+    <link href="/2024/12/01/errgroup%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/"/>
+    <url>/2024/12/01/errgroup%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</url>
+    
+    <content type="html"><![CDATA[<p>原因：不恰当使用errgroup, 子goroutine中发生panic，主goroutine中无法捕获panic,导致整个程序退出.</p><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br><span class="hljs-string">&quot;net/http&quot;</span><br><br><span class="hljs-string">&quot;golang.org/x/sync/errgroup&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">PanicHandlerFunc</span><span class="hljs-params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;<br>group := errgroup.Group&#123;&#125;<br>group.Go(<span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> <span class="hljs-type">error</span> &#123;<br><span class="hljs-built_in">panic</span>(<span class="hljs-string">&quot;just panic&quot;</span>)<br>&#125;)<br>&#125;<br><br><span class="hljs-comment">// errorgroup 导致 panic的例子</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>http.HandleFunc(<span class="hljs-string">&quot;/panic&quot;</span>, PanicHandlerFunc)<br>http.ListenAndServe(<span class="hljs-string">&quot;:8080&quot;</span>, <span class="hljs-literal">nil</span>)<br>&#125;<br><br></code></pre></td></tr></table></figure><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">curl</span> localhost:<span class="hljs-number">8080</span>/panic<br></code></pre></td></tr></table></figure><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs stylus">panic: just panic<br><br>goroutine <span class="hljs-number">37</span> <span class="hljs-selector-attr">[running]</span>:<br><span class="hljs-selector-tag">main</span><span class="hljs-selector-class">.PanicHandlerFunc</span><span class="hljs-selector-class">.func1</span>()<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="/2024/12/01/hello-world/"/>
+    <url>/2024/12/01/hello-world/</url>
+    
+    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span><br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo server<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo generate<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo deploy<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>单主机配置多Github用户</title>
+    <link href="/2023/08/27/%E5%8D%95%E4%B8%BB%E6%9C%BA%E9%85%8D%E7%BD%AE%E5%A4%9AGithub%E7%94%A8%E6%88%B7/"/>
+    <url>/2023/08/27/%E5%8D%95%E4%B8%BB%E6%9C%BA%E9%85%8D%E7%BD%AE%E5%A4%9AGithub%E7%94%A8%E6%88%B7/</url>
+    
+    <content type="html"><![CDATA[<h1 id="配置SSH-Key"><a href="#配置SSH-Key" class="headerlink" title="配置SSH Key"></a>配置SSH Key</h1><p>有时候需要在一台主机上配置多个Github用户，比如工作和个人的Github账号，但是由于Github限制单个<code>SSH Key</code>只能对应一个Github账号，所以这时候就需要配置多个<code>SSH Key</code>。<br>解决思路就是配置多个SSH Key，然后在不同的项目中使用不同的SSH Key。为了方便管理，可以为每个<code>SSH Key</code>配置一个主机别名。</p><p>在<code>~/.ssh</code>目录下创建多个SSH Key，比如<code>id_rsa_personal</code>和<code>id_rsa_work</code>，然后在<code>~/.ssh</code>目录下创建<code>config</code>文件，内容如下：</p><ul><li>配置</li></ul><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># github</span><br>Host github.com-personal <span class="hljs-comment"># 主机别名</span><br>    HostName github.com  <span class="hljs-comment"># 主机地址</span><br>    User git<br>    IdentityFile ~/.ssh/id_rsa_personal <span class="hljs-comment"># 私钥文件路径</span><br><br>Host github.com-work <span class="hljs-comment"># 主机别名</span><br>    HostName github.com <span class="hljs-comment"># 主机地址</span><br>    User git<br>    IdentityFile ~/.ssh/id_rsa_work <span class="hljs-comment"># 私钥文件路径</span><br></code></pre></td></tr></table></figure><ul><li>测试</li></ul><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh -T git@github.com-work<br>ssh -T git@github.com-personal<br><br></code></pre></td></tr></table></figure><p>在不同的项目中使用不同的SSH Key，比如在工作项目中使用<code>id_rsa_work</code>,在 Git 仓库中使用配置的主机别名,将远程仓库的 URL 修改为对应的主机别名。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 在工作项目中</span><br>git remote set-url origin git@github.com-work:username/work-repo.git<br><br><span class="hljs-comment"># 在个人项目中</span><br>git remote set-url origin git@github.com-personal:username/personal-repo.git<br><br></code></pre></td></tr></table></figure><h1 id="配置GPG-Key"><a href="#配置GPG-Key" class="headerlink" title="配置GPG Key"></a>配置GPG Key</h1><p><code>ssh key</code>用于验证你的身份，而<code>GPG key</code>用于验证你提交的代码是否被篡改过。因为Git仅依靠邮箱来判断提交者，而邮箱又是可以随便设置的。所以如果你本地Git配置中乱改邮箱，那么Github会把你的提交误认为是别人的，所以需要签名来确认身份。使用私钥签名提交，Github会用公钥来验证你的提交，这样就可以确认提交者的身份了。所以需要配置GPG Key。</p><h2 id="GPG-key的相关概念"><a href="#GPG-key的相关概念" class="headerlink" title="GPG key的相关概念"></a>GPG key的相关概念</h2><ul><li>密钥ID<code>key_id</code>: gpp key的唯一标识，可以通过<code>gpg --list-secret-keys</code>查看</li><li>公钥：根据密钥ID可以检索出公钥，可以通过<code>gpg --armor --export &#123;key_id&#125;</code>查看</li><li>私钥：根据密钥ID可以检索出私钥，可以通过<code>gpg --armor --export-secret-keys &#123;key_id&#125;</code>查看(<strong>需要输入密码</strong>)</li></ul><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">gpg --full-generate-key <span class="hljs-comment"># 生成密钥</span><br>gpg --delete-keys &lt;key_id&gt; <span class="hljs-comment"># 删除密钥</span><br><br>git config --global user.signingkey &#123;key_id&#125; <span class="hljs-comment"># 设置默认签名key()</span><br>git config --global commit.gpgsign <span class="hljs-literal">true</span> <span class="hljs-comment"># 开启自动gpg签名</span><br><br></code></pre></td></tr></table></figure><p>配置之后每次提交都需要输入密码，可以通过<code>cache</code>来缓存密码，避免每次都输入密码。<br>在<code>~/.gnupg/gpg-agent.conf</code>中添加如下内容：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 设置缓存时间为1天</span><br>default-cache-ttl 86400<br>max-cache-ttl 86400<br></code></pre></td></tr></table></figure><p><code>gpgconf kill gpg-agent &amp;&amp; gpgconf --launch gpg-agent</code> 重启gpg-agent生效</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>windows开发环境配置</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>git</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Rust入门</title>
+    <link href="/2023/08/26/Rust%E5%85%A5%E9%97%A8/"/>
+    <url>/2023/08/26/Rust%E5%85%A5%E9%97%A8/</url>
+    
+    <content type="html"><![CDATA[<p>最近听说rust很火，别人吹rust牛逼得很，不学习一下都听不懂他们在说什么，所以就学习一下rust，这里记录一下学习过程。</p><h1 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">main</span>() &#123;<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Hello, world!&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure><h1 id="通用的编程概念"><a href="#通用的编程概念" class="headerlink" title="通用的编程概念"></a>通用的编程概念</h1><h2 id="变量和可变性"><a href="#变量和可变性" class="headerlink" title="变量和可变性"></a>变量和可变性</h2><p>rust的变量默认是不可变的，如果想要变量可变，需要使用<code>mut</code>关键字。这点还是挺神奇的，默认所有的变量都是常量。</p><p><img src="https://raw.githubusercontent.com/CaiCandong/imgbase/main/img/Snipaste_2023-08-17_13-44-11.jpg"></p><h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><h2 id="控制流"><a href="#控制流" class="headerlink" title="控制流"></a>控制流</h2><h1 id="所有权"><a href="#所有权" class="headerlink" title="所有权"></a>所有权</h1>]]></content>
+    
+    
+    <categories>
+      
+      <category>Rust</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Rust</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>windows下配置zsh</title>
+    <link href="/2023/08/26/windows%E4%B8%8B%E9%85%8D%E7%BD%AEzsh/"/>
+    <url>/2023/08/26/windows%E4%B8%8B%E9%85%8D%E7%BD%AEzsh/</url>
+    
+    <content type="html"><![CDATA[<h1 id="一、安装zsh-基于git-bash"><a href="#一、安装zsh-基于git-bash" class="headerlink" title="一、安装zsh(基于git bash)"></a>一、安装zsh(基于git bash)</h1><ol><li>在 <a href="https://packages.msys2.org/package/zsh?repo=msys&variant=x86_64">zsh官网</a> 下载安装包，然后将其中的<code>etc</code>和<code>usr</code>目录复制到<code>git</code>的相应位置。</li></ol><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 创建临时目录</span><br><span class="hljs-built_in">mkdir</span> ./tmp &amp;&amp; <span class="hljs-built_in">cd</span> ./tmp<br><span class="hljs-comment"># 下载安装包</span><br>wget https://mirror.msys2.org/msys/x86_64/zsh-5.9-2-x86_64.pkg.tar.zst<br><span class="hljs-comment"># 使用解压缩工具解压</span><br>tar -xvf zsh-5.9-2-x86_64.pkg.tar.zst<br><span class="hljs-comment"># 复制etc和usr目录</span><br><span class="hljs-built_in">cp</span> -r ./etc C:\Program Files\Git<br><span class="hljs-built_in">cp</span> -r ./usr C:\Program Files\Git<br><span class="hljs-comment"># 删除临时目录</span><br><span class="hljs-built_in">cd</span> .. &amp;&amp; <span class="hljs-built_in">rm</span> -rf ./tmp<br></code></pre></td></tr></table></figure><ol start="2"><li>修改<code>~/.bashrc</code>文件，添加如下内容：</li></ol><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">`vim ~/.bashrc`<br><span class="hljs-comment"># zsh</span><br><span class="hljs-keyword">if</span> [ -t 1 ]; <span class="hljs-keyword">then</span><br>  <span class="hljs-built_in">exec</span> zsh<br><span class="hljs-keyword">fi</span><br></code></pre></td></tr></table></figure><h1 id="二、Oh-My-Zsh"><a href="#二、Oh-My-Zsh" class="headerlink" title="二、Oh-My-Zsh"></a>二、Oh-My-Zsh</h1><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment"># 安装oh-my-zsh</span><br>sh -c <span class="hljs-string">&quot;$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&quot;</span><br><br><span class="hljs-comment"># 安装zsh-autosuggestions</span><br>git clone https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/zsh-users/</span>zsh-autosuggestions <span class="hljs-variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span><span class="hljs-regexp">/plugins/</span>zsh-autosuggestions<br><br><span class="hljs-comment"># 安装zsh-syntax-highlighting</span><br>git clone https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/zsh-users/</span>zsh-syntax-highlighting.git <span class="hljs-variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span><span class="hljs-regexp">/plugins/</span>zsh-syntax-highlighting<br><br></code></pre></td></tr></table></figure><p>修改配置文件<code>~/.zshrc</code>，添加(修改为)如下内容：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><br><span class="hljs-comment"># 设置主题</span><br>ZSH_THEME=<span class="hljs-string">&quot;agnoster&quot;</span><br><br><span class="hljs-comment"># 设置插件</span><br>plugins=(<br>  git<br>  zsh-autosuggestions<br>  zsh-syntax-highlighting<br>)<br><br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>windows开发环境配置</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>shell</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
